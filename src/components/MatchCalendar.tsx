@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import type { Match, Tournament } from '@/types/tournament';
 import { getRestPlayerForRound } from '@/lib/scheduler';
+import { findPlayer, getPlayerClubName } from '@/lib/playerDisplay';
 import { getPlayerName, isMatchPlayed } from '@/lib/utils';
 import { Badge, Button, Card, Select, STAGE_LABELS } from './ui';
 
@@ -236,8 +237,12 @@ function MatchCard({
   tournament: Tournament;
   onEdit: () => void;
 }) {
+  const homePlayer = findPlayer(tournament.players, match.homePlayerId);
+  const awayPlayer = findPlayer(tournament.players, match.awayPlayerId);
   const home = getPlayerName(tournament.players, match.homePlayerId) || 'Por definir';
   const away = getPlayerName(tournament.players, match.awayPlayerId) || 'Por definir';
+  const homeClub = getPlayerClubName(homePlayer);
+  const awayClub = getPlayerClubName(awayPlayer);
   const played = isMatchPlayed(match);
   const homeWins = played && match.homeScore! > match.awayScore!;
   const awayWins = played && match.awayScore! > match.homeScore!;
@@ -270,6 +275,9 @@ function MatchCard({
             <p className={`truncate text-sm ${homeWins ? 'font-bold' : 'font-medium'}`}>
               {home}
             </p>
+            {homeClub && (
+              <p className="truncate text-[10px] text-emerald-400/90 mt-0.5">{homeClub}</p>
+            )}
             <span className="text-[10px] text-slate-300 uppercase">Local</span>
           </div>
 
@@ -289,6 +297,9 @@ function MatchCard({
             <p className={`truncate text-sm ${awayWins ? 'font-bold' : 'font-medium'}`}>
               {away}
             </p>
+            {awayClub && (
+              <p className="truncate text-[10px] text-emerald-400/90 mt-0.5">{awayClub}</p>
+            )}
             <span className="text-[10px] text-slate-300 uppercase">Visitante</span>
           </div>
         </div>

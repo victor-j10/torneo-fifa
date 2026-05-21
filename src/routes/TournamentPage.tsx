@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import ClubDraw from '@/components/ClubDraw';
 import GroupEditor from '@/components/GroupEditor';
 import MatchCalendar from '@/components/MatchCalendar';
 import MatchResultModal from '@/components/MatchResultModal';
@@ -13,11 +14,19 @@ import { getPlayerName } from '@/lib/utils';
 import { useTournamentStore } from '@/store/useTournamentStore';
 import type { Match } from '@/types/tournament';
 
-type Tab = 'resumen' | 'jugadores' | 'grupos' | 'calendario' | 'clasificacion' | 'playoffs';
+type Tab =
+  | 'resumen'
+  | 'jugadores'
+  | 'equipos'
+  | 'grupos'
+  | 'calendario'
+  | 'clasificacion'
+  | 'playoffs';
 
 const TABS: { id: Tab; label: string; icon: string }[] = [
   { id: 'resumen', label: 'Resumen', icon: '📊' },
   { id: 'jugadores', label: 'Jugadores', icon: '👤' },
+  { id: 'equipos', label: 'Sorteo equipos', icon: '🎲' },
   { id: 'grupos', label: 'Grupos', icon: '⚔️' },
   { id: 'calendario', label: 'Calendario', icon: '📅' },
   { id: 'clasificacion', label: 'Clasificación', icon: '🏆' },
@@ -152,6 +161,9 @@ export default function TournamentPage() {
               <Button variant="secondary" onClick={() => setTab('jugadores')}>
                 Jugadores
               </Button>
+              <Button variant="secondary" onClick={() => setTab('equipos')}>
+                Sorteo equipos
+              </Button>
               <Button variant="secondary" onClick={() => setTab('grupos')}>
                 Grupos
               </Button>
@@ -171,6 +183,7 @@ export default function TournamentPage() {
       )}
 
       {tab === 'jugadores' && <PlayerList tournament={tournament} />}
+      {tab === 'equipos' && <ClubDraw tournament={tournament} />}
       {tab === 'grupos' && <GroupEditor tournament={tournament} />}
       {tab === 'calendario' && (
         <MatchCalendar tournament={tournament} onEditMatch={setEditMatch} />

@@ -9,6 +9,16 @@ export function getPlayerName(
   return players.find((p) => p.id === playerId)?.name ?? 'Desconocido';
 }
 
+export function getPlayerDisplayName(
+  players: { id: string; name: string; clubId?: string }[],
+  playerId: string,
+  clubName?: string,
+): string {
+  const name = getPlayerName(players, playerId);
+  if (clubName) return `${name} (${clubName})`;
+  return name;
+}
+
 export function isMatchPlayed(match: {
   homeScore?: number;
   awayScore?: number;

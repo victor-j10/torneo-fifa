@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware';
 import { generatePlayoffMatches, getChampion, propagatePlayoffWinner } from '@/lib/bracket';
 import { generateGroupMatches } from '@/lib/scheduler';
 import { areAllGroupMatchesPlayed, hasPlayedGroupMatches } from '@/lib/standings';
+import { drawClubsToPlayers } from '@/lib/clubDraw';
 import { generateId, getMatchWinner } from '@/lib/utils';
 import type {
   CreateTournamentInput,
@@ -20,6 +21,8 @@ interface TournamentState {
 
   addPlayer: (tournamentId: string, name: string) => void;
   removePlayer: (tournamentId: string, playerId: string) => void;
+  drawClubsForPlayers: (tournamentId: string) => void;
+  clearClubAssignments: (tournamentId: string) => void;
 
   createGroup: (tournamentId: string, name: string) => void;
   removeGroup: (tournamentId: string, groupId: string) => void;
@@ -99,6 +102,36 @@ export const useTournamentStore = create<TournamentState>()(
         get().updateTournament(tournamentId, (t) => ({
           ...t,
           players: [...t.players, { id: generateId(), name: trimmed }],
+        }));
+      },
+
+      drawClubsForPlayers: (tournamentId) => {
+        get().updateTournament(tournamentId, (t) => {
+          const { assignments } = drawClubsToPlayers(
+            t.players.map((p) => p.id),
+          );
+          const clubByPlayer = new Map(
+            assignments.map((a) => [a.playerId, a.clubId]),
+          );
+          return {
+            ...t,
+            players: t.players.map((p) => {
+              const clubId = clubByPlayer.get(p.id);
+              if (clubId) return { ...p, clubId };
+              const { clubId: _removed, ...rest } = p;
+              return rest;
+            }),
+          };
+        });
+      },
+
+      clearClubAssignments: (tournamentId) => {
+        get().updateTournament(tournamentId, (t) => ({
+          ...t,
+          players: t.players.map((p) => {
+            const { clubId: _, ...rest } = p;
+            return rest;
+          }),
         }));
       },
 

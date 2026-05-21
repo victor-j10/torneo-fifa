@@ -4,6 +4,8 @@ export type MatchStage = 'GROUP' | 'R16' | 'QF' | 'SF' | 'FINAL' | 'THIRD';
 export interface Player {
   id: string;
   name: string;
+  /** Club europeo asignado en el sorteo */
+  clubId?: string;
 }
 
 export interface Group {

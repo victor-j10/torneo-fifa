@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { Match, Tournament } from '@/types/tournament';
+import { getPlayerClubName, findPlayer } from '@/lib/playerDisplay';
 import { getPlayerName } from '@/lib/utils';
 import { Button, Input, Select } from './ui';
 
@@ -37,6 +38,8 @@ export default function MatchResultModal({
   const isKO = match.stage !== 'GROUP';
   const homeName = getPlayerName(tournament.players, match.homePlayerId);
   const awayName = getPlayerName(tournament.players, match.awayPlayerId);
+  const homeClub = getPlayerClubName(findPlayer(tournament.players, match.homePlayerId));
+  const awayClub = getPlayerClubName(findPlayer(tournament.players, match.awayPlayerId));
   const isTie =
     isKO &&
     homeScore !== '' &&
@@ -73,7 +76,11 @@ export default function MatchResultModal({
                 <p className="text-[10px] uppercase tracking-widest text-slate-300 mb-1">
                   Local
                 </p>
-                <p className="font-semibold text-white truncate mb-3">{homeName || 'TBD'}</p>
+                <p className="font-semibold text-white truncate">{homeName || 'TBD'}</p>
+                {homeClub && (
+                  <p className="text-[10px] text-emerald-400 truncate mb-2">{homeClub}</p>
+                )}
+                {!homeClub && <div className="mb-3" />}
                 <Input
                   type="number"
                   min={0}
@@ -89,7 +96,11 @@ export default function MatchResultModal({
                 <p className="text-[10px] uppercase tracking-widest text-slate-300 mb-1">
                   Visitante
                 </p>
-                <p className="font-semibold text-white truncate mb-3">{awayName || 'TBD'}</p>
+                <p className="font-semibold text-white truncate">{awayName || 'TBD'}</p>
+                {awayClub && (
+                  <p className="text-[10px] text-emerald-400 truncate mb-2">{awayClub}</p>
+                )}
+                {!awayClub && <div className="mb-3" />}
                 <Input
                   type="number"
                   min={0}

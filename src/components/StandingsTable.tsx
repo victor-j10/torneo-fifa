@@ -1,4 +1,5 @@
 import type { Tournament } from '@/types/tournament';
+import { getClubById } from '@/data/europeanClubs';
 import { computeGroupStandings } from '@/lib/standings';
 import { Card } from './ui';
 
@@ -74,8 +75,16 @@ export default function StandingsTable({
                             {row.position}
                           </span>
                         </td>
-                        <td className="px-3 py-3 font-semibold text-white">
-                          {row.playerName}
+                        <td className="px-3 py-3">
+                          <span className="font-semibold text-white block">{row.playerName}</span>
+                          {(() => {
+                            const club = getClubById(
+                              tournament.players.find((p) => p.id === row.playerId)?.clubId ?? '',
+                            );
+                            return club ? (
+                              <span className="text-[10px] text-emerald-400/90">{club.name}</span>
+                            ) : null;
+                          })()}
                         </td>
                         <td className="px-3 py-3 text-center text-slate-300">{row.played}</td>
                         <td className="px-3 py-3 text-center">{row.won}</td>
