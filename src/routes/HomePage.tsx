@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTournamentStore } from '@/store/useTournamentStore';
-import { Badge, Button, Card, Input, STATUS_LABELS } from '@/components/ui';
+import { Badge, Button, Card, Input, SectionTitle, STATUS_LABELS } from '@/components/ui';
 
 export default function HomePage() {
   const tournaments = useTournamentStore((s) => s.tournaments);
@@ -53,45 +53,48 @@ export default function HomePage() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h2 className="text-2xl font-bold">Mis torneos</h2>
-          <p className="text-slate-400 text-sm mt-1">
-            Datos guardados en tu navegador (localStorage).
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="secondary" onClick={handleImport}>
-            Importar JSON
-          </Button>
-          <Button onClick={() => setShowForm(!showForm)}>
-            {showForm ? 'Cancelar' : 'Nuevo torneo'}
-          </Button>
-        </div>
+    <div className="space-y-8">
+      <SectionTitle subtitle="Organiza liguillas, grupos y playoffs entre amigos">
+        Mis torneos
+      </SectionTitle>
+
+      <div className="flex flex-wrap gap-2">
+        <Button variant="outline" onClick={handleImport}>
+          Importar JSON
+        </Button>
+        <Button onClick={() => setShowForm(!showForm)}>
+          {showForm ? 'Cancelar' : '+ Nuevo torneo'}
+        </Button>
       </div>
 
       {showForm && (
-        <Card>
-          <form onSubmit={handleCreate} className="flex gap-2">
+        <Card glow>
+          <form onSubmit={handleCreate} className="flex flex-col sm:flex-row gap-3">
             <Input
-              placeholder="Nombre del torneo"
+              placeholder="Ej. Copa FIFA 2026"
               value={name}
               onChange={(e) => setName(e.target.value)}
               autoFocus
+              className="flex-1"
             />
-            <Button type="submit">Crear</Button>
+            <Button type="submit" className="sm:shrink-0">
+              Crear torneo
+            </Button>
           </form>
         </Card>
       )}
 
       {tournaments.length === 0 ? (
-        <Card className="text-center py-12">
-          <p className="text-slate-400 mb-4">No hay torneos todavía.</p>
-          <Button onClick={() => setShowForm(true)}>Crear tu primer torneo</Button>
+        <Card className="text-center py-16 pitch-pattern">
+          <img src="/logo.svg" alt="" className="h-20 w-20 mx-auto mb-6 opacity-90" />
+          <p className="text-muted mb-6 max-w-sm mx-auto">
+            Crea tu primer torneo, añade jugadores y deja que la app calcule
+            clasificación y playoffs.
+          </p>
+          <Button onClick={() => setShowForm(true)}>Empezar ahora</Button>
         </Card>
       ) : (
-        <ul className="grid gap-3 sm:grid-cols-2">
+        <ul className="grid gap-4 sm:grid-cols-2">
           {tournaments
             .sort(
               (a, b) =>
@@ -99,41 +102,65 @@ export default function HomePage() {
             )
             .map((t) => (
               <li key={t.id}>
-                <Card className="hover:border-green-800 transition">
-                  <div className="flex justify-between items-start mb-3">
+                <Card className="h-full flex flex-col hover:border-emerald-500/30 transition-all duration-300 group">
+                  <div className="flex justify-between items-start gap-2 mb-4">
                     <Link
                       to={`/tournament/${t.id}`}
-                      className="text-lg font-semibold hover:text-green-400"
+                      className="font-display text-xl sm:text-2xl tracking-wide text-white uppercase hover:text-emerald-400 transition line-clamp-2"
                     >
                       {t.name}
                     </Link>
-                    <Badge color="green">{STATUS_LABELS[t.status]}</Badge>
+                    <Badge
+                      color={
+                        t.status === 'FINISHED'
+                          ? 'gold'
+                          : t.status === 'PLAYOFFS'
+                            ? 'blue'
+                            : 'green'
+                      }
+                    >
+                      {STATUS_LABELS[t.status]}
+                    </Badge>
                   </div>
-                  <p className="text-sm text-slate-400 mb-3">
-                    {t.players.length} jugadores · {t.groups.length} grupos ·{' '}
-                    {t.matches.length} partidos
-                  </p>
-                  <div className="flex gap-2">
+
+                  <div className="flex gap-4 text-sm text-slate-300 mb-5">
+                    <span>
+                      <strong className="text-white font-semibold">{t.players.length}</strong>{' '}
+                      jugadores
+                    </span>
+                    <span>
+                      <strong className="text-white font-semibold">{t.groups.length}</strong>{' '}
+                      grupos
+                    </span>
+                    <span>
+                      <strong className="text-white font-semibold">{t.matches.length}</strong>{' '}
+                      partidos
+                    </span>
+                  </div>
+
+                  <div className="flex gap-2 mt-auto pt-2">
                     <Link to={`/tournament/${t.id}`} className="flex-1">
                       <Button className="w-full" variant="primary">
-                        Abrir
+                        Entrar al torneo
                       </Button>
                     </Link>
                     <Button
                       variant="ghost"
-                      className="text-xs"
+                      className="text-xs px-2"
                       onClick={() => handleExport(t.id)}
+                      title="Exportar"
                     >
-                      Exportar
+                      ↓
                     </Button>
                     <Button
                       variant="ghost"
-                      className="text-xs text-red-400"
+                      className="text-xs px-2 text-red-400 hover:text-red-300"
                       onClick={() => {
                         if (confirm('¿Eliminar este torneo?')) deleteTournament(t.id);
                       }}
+                      title="Eliminar"
                     >
-                      Eliminar
+                      ×
                     </Button>
                   </div>
                 </Card>

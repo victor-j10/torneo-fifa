@@ -15,13 +15,13 @@ import type { Match } from '@/types/tournament';
 
 type Tab = 'resumen' | 'jugadores' | 'grupos' | 'calendario' | 'clasificacion' | 'playoffs';
 
-const TABS: { id: Tab; label: string }[] = [
-  { id: 'resumen', label: 'Resumen' },
-  { id: 'jugadores', label: 'Jugadores' },
-  { id: 'grupos', label: 'Grupos' },
-  { id: 'calendario', label: 'Calendario' },
-  { id: 'clasificacion', label: 'Clasificación' },
-  { id: 'playoffs', label: 'Playoffs' },
+const TABS: { id: Tab; label: string; icon: string }[] = [
+  { id: 'resumen', label: 'Resumen', icon: '📊' },
+  { id: 'jugadores', label: 'Jugadores', icon: '👤' },
+  { id: 'grupos', label: 'Grupos', icon: '⚔️' },
+  { id: 'calendario', label: 'Calendario', icon: '📅' },
+  { id: 'clasificacion', label: 'Clasificación', icon: '🏆' },
+  { id: 'playoffs', label: 'Playoffs', icon: '🎯' },
 ];
 
 export default function TournamentPage() {
@@ -39,7 +39,7 @@ export default function TournamentPage() {
     return (
       <Card>
         <p>Torneo no encontrado.</p>
-        <Link to="/" className="text-green-400 text-sm mt-2 inline-block">
+        <Link to="/" className="text-emerald-400 text-sm mt-2 inline-block hover:underline">
           ← Volver
         </Link>
       </Card>
@@ -52,6 +52,8 @@ export default function TournamentPage() {
     (m) => m.homeScore !== undefined && m.awayScore !== undefined,
   ).length;
   const hasPlayoffs = tournament.matches.some((m) => m.stage !== 'GROUP');
+  const progress =
+    groupMatches.length > 0 ? Math.round((playedGroup / groupMatches.length) * 100) : 0;
 
   const handleSaveResult = (
     homeScore: number,
@@ -64,28 +66,49 @@ export default function TournamentPage() {
 
   return (
     <div>
-      <div className="mb-6">
-        <Link to="/" className="text-sm text-slate-400 hover:text-green-400">
-          ← Torneos
-        </Link>
-        <div className="flex flex-wrap items-center gap-3 mt-2">
-          <h2 className="text-2xl font-bold">{tournament.name}</h2>
+      <Link
+        to="/"
+        className="inline-flex items-center gap-1 text-sm text-slate-300 hover:text-emerald-400 transition mb-4"
+      >
+        ← Torneos
+      </Link>
+
+      <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
+        <div>
+          <h2 className="font-display text-3xl sm:text-4xl tracking-wide text-white uppercase">
+            {tournament.name}
+          </h2>
           <Badge color="blue">{STATUS_LABELS[tournament.status]}</Badge>
         </div>
+        {groupMatches.length > 0 && (
+          <div className="glass-panel rounded-xl px-4 py-2 min-w-[140px]">
+            <p className="text-[10px] uppercase tracking-widest text-slate-300">Progreso grupos</p>
+            <div className="flex items-center gap-2 mt-1">
+              <div className="flex-1 h-1.5 rounded-full bg-slate-800 overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-emerald-600 to-emerald-400 transition-all"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+              <span className="text-xs font-bold text-emerald-400">{progress}%</span>
+            </div>
+          </div>
+        )}
       </div>
 
-      <nav className="flex flex-wrap gap-1 border-b border-slate-800 mb-6">
+      <nav className="flex gap-1 overflow-x-auto pb-1 mb-8 scrollbar-thin">
         {TABS.map((t) => (
           <button
             key={t.id}
             type="button"
             onClick={() => setTab(t.id)}
-            className={`px-4 py-2 text-sm font-medium rounded-t-lg transition ${
+            className={`shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all ${
               tab === t.id
-                ? 'bg-slate-800 text-green-400'
-                : 'text-slate-400 hover:text-white'
+                ? 'bg-gradient-to-r from-emerald-600/90 to-emerald-500/80 text-white shadow-lg shadow-emerald-500/20'
+                : 'text-slate-300 hover:text-white hover:bg-white/10'
             }`}
           >
+            <span className="text-base opacity-80">{t.icon}</span>
             {t.label}
           </button>
         ))}
@@ -94,57 +117,47 @@ export default function TournamentPage() {
       {tab === 'resumen' && (
         <div className="space-y-4">
           <Card>
-            <h3 className="font-semibold mb-3">Estado del torneo</h3>
-            <dl className="grid grid-cols-2 gap-3 text-sm">
-              <div>
-                <dt className="text-slate-500">Jugadores</dt>
-                <dd className="font-medium">{tournament.players.length}</dd>
-              </div>
-              <div>
-                <dt className="text-slate-500">Grupos</dt>
-                <dd className="font-medium">{tournament.groups.length}</dd>
-              </div>
-              <div>
-                <dt className="text-slate-500">Partidos de grupo</dt>
-                <dd className="font-medium">
-                  {playedGroup} / {groupMatches.length}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-slate-500">Puntos (V/E/D)</dt>
-                <dd className="font-medium">
-                  {tournament.pointsWin}/{tournament.pointsDraw}/
-                  {tournament.pointsLoss}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-slate-500">Clasifican por grupo</dt>
-                <dd className="font-medium">{tournament.advanceCount}</dd>
-              </div>
+            <h3 className="font-display text-xl tracking-wide text-white uppercase mb-4">
+              Estado del torneo
+            </h3>
+            <dl className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-sm">
+              {[
+                ['Jugadores', tournament.players.length],
+                ['Grupos', tournament.groups.length],
+                ['Partidos grupo', `${playedGroup} / ${groupMatches.length}`],
+                ['Puntos V/E/D', `${tournament.pointsWin}/${tournament.pointsDraw}/${tournament.pointsLoss}`],
+                ['Clasifican', tournament.advanceCount],
+              ].map(([label, value]) => (
+                <div key={label} className="rounded-xl bg-slate-800 px-4 py-3 border border-slate-600/50">
+                  <dt className="text-slate-300 text-xs uppercase tracking-wider">{label}</dt>
+                  <dd className="font-display text-xl text-white mt-1">{value}</dd>
+                </div>
+              ))}
             </dl>
           </Card>
 
           {championId && (
-            <Card className="border-green-700 bg-green-950/20 text-center py-6">
-              <p className="text-green-400 text-sm">Campeón del torneo</p>
-              <p className="text-3xl font-bold mt-1">
+            <Card glow className="text-center py-10 relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-b from-amber-500/10 to-transparent pointer-events-none" />
+              <p className="text-amber-400/90 text-xs uppercase tracking-[0.3em] mb-2">Campeón</p>
+              <p className="font-display text-4xl sm:text-5xl text-amber-300 uppercase tracking-wide">
                 {getPlayerName(tournament.players, championId)}
               </p>
             </Card>
           )}
 
           <Card>
-            <h3 className="font-semibold mb-2">Acciones rápidas</h3>
+            <h3 className="font-semibold mb-3 text-white">Acciones rápidas</h3>
             <div className="flex flex-wrap gap-2">
               <Button variant="secondary" onClick={() => setTab('jugadores')}>
-                Gestionar jugadores
+                Jugadores
               </Button>
               <Button variant="secondary" onClick={() => setTab('grupos')}>
-                Configurar grupos
+                Grupos
               </Button>
               {groupMatches.length > 0 && (
                 <Button variant="secondary" onClick={() => setTab('calendario')}>
-                  Ver calendario
+                  Calendario
                 </Button>
               )}
               {areAllGroupMatchesPlayed(tournament) && !hasPlayoffs && (
@@ -160,17 +173,11 @@ export default function TournamentPage() {
       {tab === 'jugadores' && <PlayerList tournament={tournament} />}
       {tab === 'grupos' && <GroupEditor tournament={tournament} />}
       {tab === 'calendario' && (
-        <MatchCalendar
-          tournament={tournament}
-          onEditMatch={setEditMatch}
-        />
+        <MatchCalendar tournament={tournament} onEditMatch={setEditMatch} />
       )}
       {tab === 'clasificacion' && <StandingsTable tournament={tournament} />}
       {tab === 'playoffs' && (
-        <PlayoffBracket
-          tournament={tournament}
-          onEditMatch={setEditMatch}
-        />
+        <PlayoffBracket tournament={tournament} onEditMatch={setEditMatch} />
       )}
 
       <MatchResultModal

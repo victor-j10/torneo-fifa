@@ -16,28 +16,40 @@ export default function PlayerList({ tournament }: { tournament: Tournament }) {
 
   return (
     <Card>
-      <h2 className="text-lg font-semibold mb-4">Jugadores</h2>
-      <form onSubmit={handleAdd} className="flex gap-2 mb-4">
+      <h2 className="font-display text-xl tracking-wide text-white uppercase mb-4">
+        Jugadores
+      </h2>
+      <form onSubmit={handleAdd} className="flex flex-col sm:flex-row gap-2 mb-6">
         <Input
           placeholder="Nombre del jugador"
           value={name}
           onChange={(e) => setName(e.target.value)}
+          className="flex-1"
         />
-        <Button type="submit">Añadir</Button>
+        <Button type="submit" className="sm:shrink-0">
+          Añadir jugador
+        </Button>
       </form>
       {tournament.players.length === 0 ? (
-        <p className="text-slate-500 text-sm">Añade al menos 4 jugadores.</p>
+        <p className="text-muted text-sm text-center py-6">
+          Añade al menos 4 jugadores para empezar.
+        </p>
       ) : (
-        <ul className="space-y-2">
-          {tournament.players.map((p) => (
+        <ul className="grid gap-2 sm:grid-cols-2">
+          {tournament.players.map((p, i) => (
             <li
               key={p.id}
-              className="flex items-center justify-between rounded-lg bg-slate-800/50 px-3 py-2"
+              className="flex items-center justify-between rounded-xl border border-slate-600/50 bg-slate-800 px-4 py-3 group hover:border-emerald-500/30 transition"
             >
-              <span>{p.name}</span>
+              <div className="flex items-center gap-3">
+                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/15 font-display text-sm text-emerald-400">
+                  {i + 1}
+                </span>
+                <span className="font-medium text-white">{p.name}</span>
+              </div>
               <Button
                 variant="ghost"
-                className="text-red-400 text-xs px-2 py-1"
+                className="text-red-400/80 hover:text-red-300 text-xs opacity-0 group-hover:opacity-100 transition"
                 onClick={() => removePlayer(tournament.id, p.id)}
               >
                 Eliminar

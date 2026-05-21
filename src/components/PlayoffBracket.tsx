@@ -23,9 +23,9 @@ export default function PlayoffBracket({ tournament, onEditMatch }: Props) {
 
   if (playoffMatches.length === 0) {
     return (
-      <Card>
-        <h2 className="text-lg font-semibold mb-2">Playoffs</h2>
-        <p className="text-slate-400 text-sm mb-4">
+      <Card className="text-center py-12">
+        <p className="font-display text-2xl text-white uppercase mb-2">Playoffs</p>
+        <p className="text-muted text-sm mb-6 max-w-md mx-auto">
           Cuando termines la fase de grupos, genera el cuadro eliminatorio.
         </p>
         <Button
@@ -35,7 +35,7 @@ export default function PlayoffBracket({ tournament, onEditMatch }: Props) {
           Iniciar playoffs
         </Button>
         {!allGroupDone && (
-          <p className="text-amber-400 text-xs mt-2">
+          <p className="text-amber-400 text-xs mt-4">
             Completa todos los partidos de grupo primero.
           </p>
         )}
@@ -46,9 +46,14 @@ export default function PlayoffBracket({ tournament, onEditMatch }: Props) {
   return (
     <div className="space-y-6">
       {championName && (
-        <Card className="border-green-700 bg-green-950/30 text-center">
-          <p className="text-sm text-green-400">Campeón</p>
-          <p className="text-2xl font-bold">{championName}</p>
+        <Card glow className="text-center py-8 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-amber-500/5 via-emerald-500/5 to-amber-500/5" />
+          <p className="text-xs uppercase tracking-[0.3em] text-amber-400/90 mb-1">
+            Campeón del torneo
+          </p>
+          <p className="font-display text-4xl text-amber-300 uppercase tracking-wide">
+            {championName}
+          </p>
         </Card>
       )}
 
@@ -58,10 +63,10 @@ export default function PlayoffBracket({ tournament, onEditMatch }: Props) {
 
         return (
           <Card key={stage}>
-            <h3 className="font-semibold text-green-400 mb-3">
+            <h3 className="font-display text-xl tracking-wide text-emerald-400 uppercase mb-4">
               {STAGE_LABELS[stage]}
             </h3>
-            <div className="space-y-2">
+            <div className="grid gap-3 sm:grid-cols-2">
               {stageMatches.map((m) => {
                 const home =
                   getPlayerName(tournament.players, m.homePlayerId) || 'Por definir';
@@ -73,34 +78,42 @@ export default function PlayoffBracket({ tournament, onEditMatch }: Props) {
                 return (
                   <div
                     key={m.id}
-                    className="flex items-center justify-between rounded-lg bg-slate-800/50 px-3 py-3"
+                    className={`rounded-xl border p-4 transition ${
+                      played
+                        ? 'border-emerald-500/30 bg-emerald-950/20'
+                        : 'border-slate-600/60 bg-slate-800/90'
+                    }`}
                   >
-                    <div>
+                    <div className="flex items-center justify-center gap-3 mb-3">
                       <span
-                        className={
-                          m.winnerId === m.homePlayerId ? 'font-bold text-green-400' : ''
-                        }
+                        className={`flex-1 text-right text-sm truncate ${
+                          m.winnerId === m.homePlayerId
+                            ? 'font-bold text-emerald-300'
+                            : 'text-white'
+                        }`}
                       >
                         {home}
                       </span>
-                      <span className="text-slate-500 mx-2">
-                        {played ? `${m.homeScore} - ${m.awayScore}` : 'vs'}
+                      <span className="font-display text-xl text-slate-300 shrink-0">
+                        {played ? `${m.homeScore}:${m.awayScore}` : 'VS'}
                       </span>
                       <span
-                        className={
-                          m.winnerId === m.awayPlayerId ? 'font-bold text-green-400' : ''
-                        }
+                        className={`flex-1 text-left text-sm truncate ${
+                          m.winnerId === m.awayPlayerId
+                            ? 'font-bold text-emerald-300'
+                            : 'text-white'
+                        }`}
                       >
                         {away}
                       </span>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center justify-between gap-2">
                       <Badge color={played ? 'green' : 'amber'}>
-                        {played ? 'Jugado' : 'Pendiente'}
+                        {played ? 'Final' : 'Pendiente'}
                       </Badge>
                       {canPlay && (
                         <Button
-                          variant="ghost"
+                          variant={played ? 'ghost' : 'primary'}
                           className="text-xs"
                           onClick={() => onEditMatch(m)}
                         >

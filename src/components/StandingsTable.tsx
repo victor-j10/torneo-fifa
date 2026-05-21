@@ -10,7 +10,7 @@ export default function StandingsTable({
   if (tournament.groups.length === 0) {
     return (
       <Card>
-        <p className="text-slate-500">Configura los grupos primero.</p>
+        <p className="text-muted">Configura los grupos primero.</p>
       </Card>
     );
   }
@@ -29,57 +29,78 @@ export default function StandingsTable({
 
         return (
           <Card key={group.id}>
-            <h3 className="font-semibold text-green-400 mb-3">
+            <h3 className="font-display text-xl tracking-wide text-emerald-400 uppercase mb-4 flex items-center gap-2">
+              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/20 text-sm font-bold text-emerald-300">
+                {group.name}
+              </span>
               Grupo {group.name}
             </h3>
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto rounded-xl border border-slate-800/80">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-left text-slate-400 border-b border-slate-700">
-                    <th className="pb-2 pr-2">#</th>
-                    <th className="pb-2 pr-2">Jugador</th>
-                    <th className="pb-2 pr-2 text-center">PJ</th>
-                    <th className="pb-2 pr-2 text-center">G</th>
-                    <th className="pb-2 pr-2 text-center">E</th>
-                    <th className="pb-2 pr-2 text-center">P</th>
-                    <th className="pb-2 pr-2 text-center">GF</th>
-                    <th className="pb-2 pr-2 text-center">GC</th>
-                    <th className="pb-2 pr-2 text-center">DG</th>
-                    <th className="pb-2 text-center font-bold">Pts</th>
+                  <tr className="bg-slate-800 text-left text-slate-200 text-xs uppercase tracking-wider">
+                    <th className="px-3 py-3">#</th>
+                    <th className="px-3 py-3">Jugador</th>
+                    <th className="px-3 py-3 text-center">PJ</th>
+                    <th className="px-3 py-3 text-center">G</th>
+                    <th className="px-3 py-3 text-center">E</th>
+                    <th className="px-3 py-3 text-center">P</th>
+                    <th className="px-3 py-3 text-center">GF</th>
+                    <th className="px-3 py-3 text-center">GC</th>
+                    <th className="px-3 py-3 text-center">DG</th>
+                    <th className="px-3 py-3 text-center">Pts</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {standings.map((row) => (
-                    <tr
-                      key={row.playerId}
-                      className={`border-b border-slate-800 ${
-                        row.position <= tournament.advanceCount
-                          ? 'bg-green-950/30'
-                          : ''
-                      }`}
-                    >
-                      <td className="py-2 pr-2">{row.position}</td>
-                      <td className="py-2 pr-2 font-medium">{row.playerName}</td>
-                      <td className="py-2 pr-2 text-center">{row.played}</td>
-                      <td className="py-2 pr-2 text-center">{row.won}</td>
-                      <td className="py-2 pr-2 text-center">{row.drawn}</td>
-                      <td className="py-2 pr-2 text-center">{row.lost}</td>
-                      <td className="py-2 pr-2 text-center">{row.goalsFor}</td>
-                      <td className="py-2 pr-2 text-center">{row.goalsAgainst}</td>
-                      <td className="py-2 pr-2 text-center">
-                        {row.goalDifference > 0 ? '+' : ''}
-                        {row.goalDifference}
-                      </td>
-                      <td className="py-2 text-center font-bold text-green-400">
-                        {row.points}
-                      </td>
-                    </tr>
-                  ))}
+                  {standings.map((row) => {
+                    const qualifies = row.position <= tournament.advanceCount;
+                    return (
+                      <tr
+                        key={row.playerId}
+                        className={`border-t border-slate-800/50 transition ${
+                          qualifies
+                            ? 'bg-emerald-500/10 hover:bg-emerald-500/15'
+                            : 'hover:bg-slate-800/30'
+                        }`}
+                      >
+                        <td className="px-3 py-3">
+                          <span
+                            className={`inline-flex h-6 w-6 items-center justify-center rounded-md text-xs font-bold ${
+                              qualifies
+                                ? 'bg-emerald-600 text-white'
+                                : 'bg-slate-800 text-slate-300'
+                            }`}
+                          >
+                            {row.position}
+                          </span>
+                        </td>
+                        <td className="px-3 py-3 font-semibold text-white">
+                          {row.playerName}
+                        </td>
+                        <td className="px-3 py-3 text-center text-slate-300">{row.played}</td>
+                        <td className="px-3 py-3 text-center">{row.won}</td>
+                        <td className="px-3 py-3 text-center">{row.drawn}</td>
+                        <td className="px-3 py-3 text-center">{row.lost}</td>
+                        <td className="px-3 py-3 text-center">{row.goalsFor}</td>
+                        <td className="px-3 py-3 text-center">{row.goalsAgainst}</td>
+                        <td className="px-3 py-3 text-center font-medium">
+                          {row.goalDifference > 0 ? '+' : ''}
+                          {row.goalDifference}
+                        </td>
+                        <td className="px-3 py-3 text-center">
+                          <span className="font-display text-lg text-emerald-400">
+                            {row.points}
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
-            <p className="text-xs text-slate-500 mt-2">
-              Clasifican los {tournament.advanceCount} primeros (fondo verde).
+            <p className="text-xs text-slate-300 mt-3 flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-emerald-500" />
+              Clasifican los {tournament.advanceCount} primeros
             </p>
           </Card>
         );
