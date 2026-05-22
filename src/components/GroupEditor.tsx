@@ -136,7 +136,8 @@ export default function GroupEditor({ tournament }: { tournament: Tournament }) 
               Calendario de grupos
             </h3>
             <p className="text-muted text-sm mb-4">
-              Genera todos los partidos (todos contra todos) por grupo.
+              Genera todos los partidos (todos contra todos) por grupo. Playoffs: clasifican 3
+              (1º a semis directo; 2º y 3º juegan previa contra el otro grupo).
             </p>
             {!hasFixtures ? (
               <Button onClick={() => generateGroupFixtures(tournament.id)}>

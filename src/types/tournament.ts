@@ -1,5 +1,5 @@
 export type TournamentStatus = 'DRAFT' | 'GROUP_STAGE' | 'PLAYOFFS' | 'FINISHED';
-export type MatchStage = 'GROUP' | 'R16' | 'QF' | 'SF' | 'FINAL' | 'THIRD';
+export type MatchStage = 'GROUP' | 'PRELIM' | 'R16' | 'QF' | 'SF' | 'FINAL' | 'THIRD';
 
 export interface Player {
   id: string;

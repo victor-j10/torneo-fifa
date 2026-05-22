@@ -129,6 +129,7 @@ export const STATUS_LABELS: Record<string, string> = {
 
 export const STAGE_LABELS: Record<string, string> = {
   GROUP: 'Grupo',
+  PRELIM: 'Fase previa',
   R16: 'Octavos',
   QF: 'Cuartos',
   SF: 'Semifinal',

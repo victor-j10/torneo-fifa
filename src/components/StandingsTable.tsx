@@ -1,7 +1,9 @@
 import type { Tournament } from '@/types/tournament';
 import { getClubById } from '@/data/europeanClubs';
 import { computeGroupStandings } from '@/lib/standings';
-import { Card } from './ui';
+import { getQualificationBadge } from '@/lib/qualification';
+import { canUseTwoGroupPlayoffFormat } from '@/lib/bracket';
+import { Badge, Card } from './ui';
 
 export default function StandingsTable({
   tournament,
@@ -55,6 +57,9 @@ export default function StandingsTable({
                 <tbody>
                   {standings.map((row) => {
                     const qualifies = row.position <= tournament.advanceCount;
+                    const qualBadge = canUseTwoGroupPlayoffFormat(tournament)
+                      ? getQualificationBadge(row.position)
+                      : null;
                     return (
                       <tr
                         key={row.playerId}
@@ -82,9 +87,14 @@ export default function StandingsTable({
                               tournament.players.find((p) => p.id === row.playerId)?.clubId ?? '',
                             );
                             return club ? (
-                              <span className="text-[10px] text-emerald-400/90">{club.name}</span>
+                              <span className="text-[10px] text-emerald-400/90 block">{club.name}</span>
                             ) : null;
                           })()}
+                          {qualBadge && (
+                            <span className="inline-block mt-1">
+                              <Badge color={qualBadge.color}>{qualBadge.label}</Badge>
+                            </span>
+                          )}
                         </td>
                         <td className="px-3 py-3 text-center text-slate-300">{row.played}</td>
                         <td className="px-3 py-3 text-center">{row.won}</td>
@@ -107,10 +117,21 @@ export default function StandingsTable({
                 </tbody>
               </table>
             </div>
-            <p className="text-xs text-slate-300 mt-3 flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-emerald-500" />
-              Clasifican los {tournament.advanceCount} primeros
-            </p>
+            <div className="text-xs text-slate-300 mt-3 space-y-1">
+              <p>Clasifican los {tournament.advanceCount} primeros de cada grupo.</p>
+              {canUseTwoGroupPlayoffFormat(tournament) && (
+                <>
+                  <p className="flex items-center gap-2">
+                    <span className="h-2 w-2 rounded-full bg-amber-400" />
+                    1º → semifinal directa
+                  </p>
+                  <p className="flex items-center gap-2">
+                    <span className="h-2 w-2 rounded-full bg-amber-600" />
+                    2º vs 3º del otro grupo → fase previa → semifinal
+                  </p>
+                </>
+              )}
+            </div>
           </Card>
         );
       })}

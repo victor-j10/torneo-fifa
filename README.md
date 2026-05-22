@@ -42,8 +42,8 @@ Abre http://localhost:5173
 4. **Generar calendario** en la pestaña Grupos
 5. Introducir resultados en Calendario
 6. Revisar Clasificación
-7. **Iniciar playoffs** cuando todos los partidos de grupo estén jugados
-8. Completar el cuadro eliminatorio
+7. **Iniciar playoffs** (con 2 grupos: clasifican 3; 1º a semis directo; 2º vs 3º del otro grupo en fase previa)
+8. Completar semifinales y final
 
 ## Stack
 

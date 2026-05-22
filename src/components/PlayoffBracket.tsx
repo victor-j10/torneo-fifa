@@ -1,6 +1,6 @@
 import type { Match, Tournament } from '@/types/tournament';
 import { areAllGroupMatchesPlayed } from '@/lib/standings';
-import { getChampion } from '@/lib/bracket';
+import { canUseTwoGroupPlayoffFormat, getChampion } from '@/lib/bracket';
 import { getPlayerName, isMatchPlayed } from '@/lib/utils';
 import { useTournamentStore } from '@/store/useTournamentStore';
 import { Badge, Button, Card, STAGE_LABELS } from './ui';
@@ -10,7 +10,7 @@ interface Props {
   onEditMatch: (match: Match) => void;
 }
 
-const STAGE_ORDER = ['R16', 'QF', 'SF', 'FINAL', 'THIRD'] as const;
+const STAGE_ORDER = ['PRELIM', 'R16', 'QF', 'SF', 'FINAL', 'THIRD'] as const;
 
 export default function PlayoffBracket({ tournament, onEditMatch }: Props) {
   const startPlayoffs = useTournamentStore((s) => s.startPlayoffs);
@@ -25,9 +25,21 @@ export default function PlayoffBracket({ tournament, onEditMatch }: Props) {
     return (
       <Card className="text-center py-12">
         <p className="font-display text-2xl text-white uppercase mb-2">Playoffs</p>
-        <p className="text-muted text-sm mb-6 max-w-md mx-auto">
+        <p className="text-muted text-sm mb-4 max-w-md mx-auto">
           Cuando termines la fase de grupos, genera el cuadro eliminatorio.
         </p>
+        {canUseTwoGroupPlayoffFormat(tournament) ? (
+          <ul className="text-xs text-slate-300 text-left max-w-md mx-auto mb-6 space-y-1 list-disc list-inside">
+            <li>Clasifican 3 por grupo</li>
+            <li>1º de cada grupo (los dos líderes) → semifinal directa</li>
+            <li>2º vs 3º del otro grupo → fase previa → semifinal</li>
+          </ul>
+        ) : (
+          <p className="text-amber-300/90 text-xs mb-6 max-w-md mx-auto">
+            Formato completo (2 grupos, 3+ jugadores por grupo): 1º a semis, 2º vs 3º
+            cruzados en previa. Con otra configuración se usa un cuadro simplificado.
+          </p>
+        )}
         <Button
           onClick={() => startPlayoffs(tournament.id)}
           disabled={!allGroupDone}

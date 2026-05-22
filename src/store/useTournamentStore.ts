@@ -60,7 +60,7 @@ function createEmptyTournament(input: CreateTournamentInput): Tournament {
     pointsWin: input.pointsWin ?? 3,
     pointsDraw: input.pointsDraw ?? 1,
     pointsLoss: input.pointsLoss ?? 0,
-    advanceCount: input.advanceCount ?? 2,
+    advanceCount: input.advanceCount ?? 3,
     thirdPlace: input.thirdPlace ?? false,
     players: [],
     groups: [],
